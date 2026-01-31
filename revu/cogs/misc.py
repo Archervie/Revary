@@ -21,8 +21,6 @@ import os
 from google import genai
 from google.genai import types
 
-# Prevents creation of .pyc files
-sys.dont_write_bytecode = True
 
 # Configures logging
 logging.basicConfig(

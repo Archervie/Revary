@@ -6,11 +6,6 @@ import sys
 import selfcord
 from selfcord.ext import commands
 
-# Local imports
-from terminal import GARYShell
-
-# Prevent creation of .pyc files
-sys.dont_write_bytecode = True
 
 # Initialize bot
 bot = commands.Bot(
@@ -52,16 +47,6 @@ async def on_message(message: selfcord.Message) -> int:
 
 # Loads the command cogs
 async def load_extensions() -> int:
-    term_configs = {
-            "cogs": [],
-            "a_cogs": [
-                "Misc.misc"
-            ],
-            "d_cogs": [
-                "Misc.misc"
-            ],
-            "default": False
-    }
 
     # shell = GARYShell(term_configs)
     # shell.cmdloop()
