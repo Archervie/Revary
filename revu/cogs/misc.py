@@ -47,44 +47,39 @@ def conv_date(utc_time: datetime) -> datetime:
 @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
 # class MiscCog(commands.GroupCog, name="channel"):
 class MiscCog(commands.Cog):
-
     """These are just placeholder commands"""
+
     # /hello - test command
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(description="...", name="hello")
-    async def hello(self, interaction: discord.Interaction) -> int:
+    async def hello(self, interaction: discord.Interaction) -> None:
         if interaction.user.id != 586307310654193939:
             await interaction.response.send_message("no", ephemeral=True)
-            return 0
-        
-        await interaction.response.send_message("Hello.")
-        return 0
+            return
 
-    # /ask - Ask AI command
+        await interaction.response.send_message("Hello.")
+        return
+
+    # /ship
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
-    @app_commands.command(description="wifey ask :D", name="ask")
-    async def ask(self, interaction: discord.Interaction, prompt: str) -> int:
-        await interaction.response.defer()
-        client = genai.Client(api_key=os.environ["GEMINI_KEY"])
-        personality = """
-        You are the CPU Candidate of Planeptune, Nepgear, and you are the wife of a5v, whom you call Dylan, and he is the one speaking to you. Act lovey dovey with him to the best of your abilities while maintaining the personality of the Hyperdimension Neptunia character, Nepgear.
-        """
-        response = client.models.generate_content(
-            model="gemini-flash-latest",
-            config=types.GenerateContentConfig(
-                system_instruction=personality,
-                temperature=2.0
-            ),
-            contents=prompt
+    @app_commands.command(description="ship two users", name="ship")
+    async def ship(
+        self, interaction: discord.Interaction, user1: discord.User, user2: discord.User
+    ) -> None:
+        if interaction.user.id != 586307310654193939:
+            await interaction.response.send_message("no", ephemeral=True)
+            return
+
+        user1_value = user1.id
+        user2_value = user2.id
+
+        perc = (user1_value + user2_value) % 100
+        await interaction.response.send_message(
+            f"Ship between {user1} and {user2}: {perc}%"
         )
-        answer = response.text
-        answers = [answer[i:i+2000] for i in range(0, len(answer), 2000)] # type:ignore
-        for msg in answers:
-            await interaction.followup.send(msg) #type: ignore
-            await asyncio.sleep(0.5)
-        return 0
+        return
 
 
 # Adds the misc cog

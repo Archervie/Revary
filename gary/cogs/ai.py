@@ -27,6 +27,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
 class AICog(commands.Cog):
@@ -45,16 +46,17 @@ class AICog(commands.Cog):
         response = client.models.generate_content(
             model="gemini-flash-latest",
             config=types.GenerateContentConfig(
-                system_instruction=personality,
-                temperature=2
+                system_instruction=personality, temperature=2
             ),
-            contents=prompt
+            contents=prompt,
         )
 
         answer = response.text
-        answers = [answer[i:i+2000] for i in range(0, len(answer), 2000)] # type:ignore
+        answers = [
+            answer[i : i + 2000] for i in range(0, len(answer), 2000)
+        ]  # type:ignore
         for msg in answers:
-            await interaction.followup.send(msg) #type: ignore
+            await interaction.followup.send(msg)  # type: ignore
             await asyncio.sleep(0.5)
         return 0
 

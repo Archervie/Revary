@@ -1,4 +1,3 @@
-
 # Standard library imports
 import asyncio
 import os
@@ -27,9 +26,9 @@ async def main() -> None:
     load_dotenv(dotenv_path=dotenv_path)
 
     await asyncio.gather(
-        revu.start(os.environ["REVU_TOKEN"]), 
-        gary.start(os.environ["GARY_TOKEN"]), 
-        gary_self.start(os.environ["GARY_SELF_TOKEN"])
+        revu.start(os.environ["REVU_TOKEN"]),
+        gary.start(os.environ["GARY_TOKEN"]),
+        gary_self.start(os.environ["GARY_SELF_TOKEN"]),
     )
 
 

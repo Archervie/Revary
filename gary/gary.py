@@ -27,8 +27,8 @@ class GARY(commands.Bot):
     # Loads all GARY commands
     async def setup_hook(self) -> None:
         for cog in cogs:
-                await self.load_extension(f"gary.cogs.{cog}")
-                logging.info(f"GARY: Loaded {cog}!")
+            await self.load_extension(f"gary.cogs.{cog}")
+            logging.info(f"GARY: Loaded {cog}!")
 
         await self.tree.sync()
         return await super().setup_hook()
@@ -37,4 +37,3 @@ class GARY(commands.Bot):
     async def on_ready(self) -> None:
         await self.change_presence(activity=discord.Game("test"))
         logging.info("GARY has successfully connected!")
-

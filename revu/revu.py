@@ -29,8 +29,8 @@ class Revu(commands.Bot):
     # Loads all Revu commands
     async def setup_hook(self) -> None:
         for cog in cogs:
-                await self.load_extension(f"revu.cogs.{cog}")
-                logging.info(f"Revu: Loaded {cog}!")
+            await self.load_extension(f"revu.cogs.{cog}")
+            logging.info(f"Revu: Loaded {cog}!")
 
         await self.tree.sync()
         return await super().setup_hook()
@@ -39,4 +39,3 @@ class Revu(commands.Bot):
     async def on_ready(self) -> None:
         await self.change_presence(activity=discord.Game("test"))
         logging.info("Revu has successfully connected!")
-

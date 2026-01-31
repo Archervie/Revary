@@ -41,9 +41,8 @@ def conv_date(utc_time: datetime) -> datetime:
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
 class MiscCog(commands.GroupCog, name="channel"):
-
-
     """These are just placeholder commands"""
+
     # /pp - test command
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
@@ -52,7 +51,7 @@ class MiscCog(commands.GroupCog, name="channel"):
         if interaction.user.id != 586307310654193939:
             await interaction.response.send_message("no", ephemeral=True)
             return 0
-        
+
         # size = "=" * random.randint(0, 20)
         # await interaction.response.send_message(f"{user.mention}'s pp size: 8{size}D")
         await interaction.response.send_message("yo")
