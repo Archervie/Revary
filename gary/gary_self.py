@@ -1,8 +1,5 @@
-# Standard library imports
 import logging
-import sys
 
-# Third-party imports
 import selfcord
 from selfcord.ext import commands
 
@@ -15,12 +12,7 @@ bot = commands.Bot(
     self_bot=True,
 )
 
-# Configures logging
-logging.basicConfig(
-    datefmt="\033[1m\033[2m%Y-%m-%d %H:%M:%S\033[0m",
-    format="%(asctime)s %(levelname)-6s %(filename)s %(lineno)-3d %(message)s",
-    level=logging.INFO,
-)
+logger = logging.getLogger(__name__)
 
 
 # Sends when GARY connects
@@ -28,7 +20,7 @@ logging.basicConfig(
 async def on_ready() -> None:
     global gary_user
     gary_user = bot
-    logging.info("GARY: SELF has successfully connected.")
+    logger.info("GARY: SELF has successfully connected.")
 
 
 # Runs function for commands/cogs

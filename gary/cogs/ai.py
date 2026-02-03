@@ -1,40 +1,23 @@
-# Standard library imports
 import asyncio
-from datetime import datetime
-import logging
-from pathlib import Path
 import os
-import random
-import sys
 
-# Third-party imports
-import requests
-import shutil
 import discord
-import discord.abc
 from discord import app_commands
 from discord.ext import commands
 from google import genai
 from google.genai import types
-from pytz import timezone, utc
-import selfcord
-import selfcord.abc
 
-# Configures logging
-logging.basicConfig(
-    datefmt="\033[1m\033[2m%Y-%m-%d %H:%M:%S\033[0m",
-    format="%(asctime)s %(levelname)-6s %(filename)s %(lineno)-3d %(message)s",
-    level=logging.INFO,
-)
+from utils import BaseGroupCog, is_authorized
 
 
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
-class AICog(commands.Cog):
+class AICog(BaseGroupCog, name="ai"):
     # /ask - Ask AI command
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(description="yo dad talk to me", name="ask")
+    @is_authorized()
     async def ask(self, interaction: discord.Interaction, prompt: str) -> int:
         await interaction.response.defer()
         client = genai.Client(api_key=os.environ["GEMINI_KEY"])
