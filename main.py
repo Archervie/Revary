@@ -16,7 +16,7 @@ discord.utils.setup_logging(level=logging.INFO, root=True)
 
 async def main() -> None:
     """
-    Runs all three bots concurrently via asyncio.
+    Run all three bots concurrently asynchronously.
     """
 
     revu = Revu()

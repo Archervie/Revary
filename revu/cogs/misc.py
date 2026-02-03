@@ -13,14 +13,13 @@ class MiscCog(BaseGroupCog, name="misc"):
         self.bot = bot
         super().__init__(bot)
 
-    # /test
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(description="Test!", name="test")
     @is_authorized()
     async def test(self, interaction: discord.Interaction) -> None:
         """
-        Confirm whether the bot is working
+        Confirm whether the bot is working or not.
         """
         await interaction.response.send_message("Test complete!", ephemeral=True)
         self.log.info(
@@ -35,6 +34,13 @@ class MiscCog(BaseGroupCog, name="misc"):
     async def ship(
         self, interaction: discord.Interaction, user1: discord.User, user2: discord.User
     ) -> None:
+        """
+        Ship two Discord users.
+
+        Args:
+            user1 (discord.User): The first Discord user to ship.
+            user2 (discord.User): The second Discord user to ship.
+        """
         user1_value = user1.id
         user2_value = user2.id
 

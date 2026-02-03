@@ -15,7 +15,6 @@ class AuthCog(BaseGroupCog, name="auth"):
         self.bot = bot
         super().__init__(bot)
 
-    # /authorize - test command
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(
@@ -25,6 +24,12 @@ class AuthCog(BaseGroupCog, name="auth"):
     async def authorize(
         self, interaction: discord.Interaction, user: discord.User | None = None
     ) -> None:
+        """
+        Authorize a user and adding them to the JSON DB.
+
+        Args:
+            user (discord.User): The Discord user of the person to authorize.
+        """
         if not user:
             user = interaction.user.name
             user_id = interaction.user.id
@@ -41,6 +46,7 @@ class AuthCog(BaseGroupCog, name="auth"):
                 f"Successfully authorized user {user}", ephemeral=True
             )
             self.log.info(f"Successfully authorized user {user}")
+        self.log.info(f"{interaction.command.name} ran by {interaction.user}.")
 
 
 # Adds the auth cog

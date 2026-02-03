@@ -39,7 +39,7 @@ class GlobalErrorHandler(BaseCog):
             )
 
             self.log.warning(
-                f"Unauthorized access attempt by {interaction.user} on {bot_name}"
+                f"Unauthorized access attempt by {interaction.user} on {bot_name}: {interaction.command.name}"
             )
 
         # This handles missing permissions
@@ -47,6 +47,7 @@ class GlobalErrorHandler(BaseCog):
             await interaction.response.send_message(
                 "Sorry, you don't have permission to do this.", ephemeral=True
             )
+            self.log.warning(f"")
 
         # This handles any cooldown errors.
         elif isinstance(error, app_commands.CommandOnCooldown):
@@ -55,7 +56,9 @@ class GlobalErrorHandler(BaseCog):
                 ephemeral=True,
             )
 
-            self.log.info(f"Cooldown needed.")
+            self.log.info(
+                f"Cooldown needed for {interaction.command.name}. Try again in {error.retry_after:.1f}"
+            )
 
         # For any unexpected bugs
         else:
@@ -66,11 +69,11 @@ class GlobalErrorHandler(BaseCog):
             # Only send a message if we haven't already responded
             if not interaction.response.is_done():
                 await interaction.response.send_message(
-                    "An unknown error seems to have occurred. Please investigate",
+                    "An unknown error seems to have occurred.",
                     ephemeral=True,
                 )
-            logging.warning(
-                "An unknown error seems to have occurred. Please investigate"
+            self.log.warning(
+                f"An unknown error seems to have occurred for command {interaction.command.name}."
             )
 
 
