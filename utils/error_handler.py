@@ -4,7 +4,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from utils import BaseCog, UnauthorizedError
+from .base import BaseCog
+from .auth_utils import UnauthorizedError
 
 
 class GlobalErrorHandler(BaseCog):
