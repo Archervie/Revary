@@ -8,7 +8,7 @@ class Standard:
     A unified toolbox that holds all local utility instances.
     """
 
-    def __init__(self):
+    def __init__(self, name):
         self.auth = Authorization()
-        self.date = Dates("EST")
-        self.logger = logging.getLogger("Bot_Standard")
+        self.dates = Dates("EST")
+        self.logger = logging.getLogger(name)

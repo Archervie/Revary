@@ -9,16 +9,17 @@ cogs = ["misc", "auth"]
 class Revu(commands.Bot):
     def __init__(self) -> None:
         super().__init__(command_prefix=".", intents=discord.Intents.all())
-        self.std = Standard()
+        self.std = Standard("Revu")
 
     async def setup_hook(self) -> None:
         for cog in cogs:
             await self.load_extension(f"revu.cogs.{cog}")
-            self.std.log(f"Revu: Loaded {cog}!")
+            self.std.logger.info(f"Loaded {cog}!")
         await self.load_extension("utils.error_handler")
         await self.tree.sync()
         return await super().setup_hook()
 
     async def on_ready(self) -> None:
-        await self.change_presence(activity=discord.Game("test"))
-        self.std.log("Revu has successfully connected!")
+        await self.change_presence(activity=discord.Game(""))
+        latency = round(self.latency, 3)
+        self.std.logger.info(f"Successfully connected! Latency: {latency}ms")

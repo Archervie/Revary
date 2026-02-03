@@ -12,7 +12,7 @@ class BaseCog(commands.Cog):
         super().__init__()
 
         self.bot = bot
-        self.std = Standard()
+        self.std = Standard(bot.user.name)
 
         self.auth = self.std.auth
         self.dates = self.std.dates
@@ -29,7 +29,7 @@ class BaseGroupCog(commands.GroupCog):
         super().__init__()
 
         self.bot = bot
-        self.std = Standard()
+        self.std = Standard(bot.user.name)
 
         self.auth = self.std.auth
         self.dates = self.std.dates

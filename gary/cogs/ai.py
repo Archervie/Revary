@@ -13,7 +13,11 @@ from utils import BaseGroupCog, is_authorized
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
 class AICog(BaseGroupCog, name="ai"):
-    # /ask - Ask AI command
+
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot = bot
+        super().__init__(bot)
+
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(description="yo dad talk to me", name="ask")

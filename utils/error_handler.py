@@ -14,6 +14,7 @@ class GlobalErrorHandler(BaseCog):
     """
 
     def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(bot)
         self.bot = bot
         bot.tree.on_error = self.on_app_command_error
 

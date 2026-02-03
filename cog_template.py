@@ -12,7 +12,7 @@ class ExampleCog(BaseGroupCog, name=""):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        super().__init__()
+        super().__init__(bot)
 
     @app_commands.user_install()
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
@@ -21,6 +21,7 @@ class ExampleCog(BaseGroupCog, name=""):
     async def example(self, interaction: discord.Interaction) -> None:
         """ """
         await interaction.response.send_message("", ephemeral=True)
+        self.log.info(f"{interaction.command.name} ran by {interaction.user}.")
 
 
 # Adds the misc cog

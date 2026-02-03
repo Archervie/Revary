@@ -1,5 +1,3 @@
-import logging
-
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -13,7 +11,7 @@ class MiscCog(BaseGroupCog, name="misc"):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        super().__init__()
+        super().__init__(bot)
 
     # /test
     @app_commands.user_install()
@@ -21,8 +19,13 @@ class MiscCog(BaseGroupCog, name="misc"):
     @app_commands.command(description="Test!", name="test")
     @is_authorized()
     async def test(self, interaction: discord.Interaction) -> None:
+        """
+        Confirm whether the bot is working
+        """
         await interaction.response.send_message("Test complete!", ephemeral=True)
-        self.log.info("Test complete!")
+        self.log.info(
+            f"{interaction.command.name} ran by {interaction.user}: Test Complete!"
+        )
 
     # /ship
     @app_commands.user_install()
@@ -39,6 +42,7 @@ class MiscCog(BaseGroupCog, name="misc"):
         await interaction.response.send_message(
             f"Ship between {user1} and {user2}: {perc}%"
         )
+        self.log.info(f"{interaction.command.name} ran by {interaction.user}.")
 
 
 # Adds the misc cog

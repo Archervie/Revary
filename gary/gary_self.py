@@ -12,7 +12,7 @@ bot = commands.Bot(
     self_bot=True,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("GARY_SELF")
 
 
 # Sends when GARY connects
@@ -20,7 +20,8 @@ logger = logging.getLogger(__name__)
 async def on_ready() -> None:
     global gary_user
     gary_user = bot
-    logger.info("GARY: SELF has successfully connected.")
+    latency = round(bot.latency, 3)
+    logger.info(f"Successfully connected! Latency: {latency}ms")
 
 
 # Runs function for commands/cogs

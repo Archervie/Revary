@@ -13,7 +13,7 @@ class AuthCog(BaseGroupCog, name="auth"):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        super().__init__()
+        super().__init__(bot)
 
     # /authorize - test command
     @app_commands.user_install()
