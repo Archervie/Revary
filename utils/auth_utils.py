@@ -4,9 +4,11 @@ import os
 
 import discord
 from discord import app_commands
+from dotenv import load_dotenv
 
 
 # We add a salt to prevent from cracking the hashes
+load_dotenv()
 salt = os.environ["SALT"]
 
 
