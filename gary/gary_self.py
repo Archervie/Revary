@@ -55,6 +55,7 @@ async def load_extensions() -> int:
 
 
 # Used for giving Revu access to GARY
+# Make sure to do await gary_user()
 async def get_gary() -> commands.Bot:
     await bot.wait_until_ready()
     return gary_user

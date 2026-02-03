@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from utils import Standard
 
-cogs = ["misc", "auth"]
+initial_cogs = ["auth", "misc", "user"]
 
 
 class Revu(commands.Bot):
@@ -12,7 +12,7 @@ class Revu(commands.Bot):
         self.std = Standard("Revu")
 
     async def setup_hook(self) -> None:
-        for cog in cogs:
+        for cog in initial_cogs:
             await self.load_extension(f"revu.cogs.{cog}")
             self.std.logger.info(f"Loaded {cog}!")
         await self.load_extension("utils.error_handler")

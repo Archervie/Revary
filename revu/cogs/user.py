@@ -1,0 +1,183 @@
+from typing import List
+
+import discord
+from discord import app_commands
+from discord.ext import commands
+
+from gary.gary_self import get_gary
+from utils import BaseGroupCog, is_authorized
+from revu.utils.user_util import ProfileView
+
+
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
+class UserCog(BaseGroupCog, name="user"):
+    """ """
+
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot = bot
+        super().__init__(bot)
+
+    @app_commands.user_install()
+    @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
+    @app_commands.command(
+        description="Get the avatar of a user in a specific size.", name="avatar"
+    )
+    @is_authorized()
+    async def avatar(
+        self,
+        interaction: discord.Interaction,
+        size: str,
+        user: discord.User | None = None,
+    ) -> None:
+        """ """
+
+        # Grabs the self-user; done for ease
+        if not user:
+            gary = await get_gary()
+            user = gary.user
+
+        avatar = user.avatar or user.default_avatar
+
+        try:
+            size = int(size)
+            avatar_url = avatar.replace(format="png", size=size).url
+
+            embed = discord.Embed(
+                color=(user.color.value if user.color else self.bot.user.color.value),
+                title=f"{user}'s avatar: {size}x{size}",
+                url=avatar_url,
+                timestamp=self.dates.date(),
+            )
+
+            embed.set_image(url=avatar_url)
+
+            await interaction.response.send_message(embed=embed)
+
+        except ValueError:
+            await interaction.response.send_message(
+                "Please provide a valid size: 2^x from 2 to 4096.", ephemeral=True
+            )
+
+    @app_commands.user_install()
+    @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
+    @app_commands.command(
+        description="View account facts and information for a user.", name="profile"
+    )
+    @is_authorized()
+    async def profile(
+        self,
+        interaction: discord.Interaction,
+        user: discord.User | None = None,
+    ) -> None:
+        """ """
+
+        if not user:
+            gary = await get_gary()
+            user = gary.user
+
+        try:
+            embeds: List[discord.Embed] = []
+
+            color_value = self.bot.user.color.value
+            if hasattr(user, "color") and user.color.value != 0:
+                color_value = user.color.value
+
+            embed_main = discord.Embed(
+                color=color_value,
+                title=f"Profile: {user.name}",
+                timestamp=self.dates.date(),
+            )
+            embed_main.set_thumbnail(url=user.display_avatar.url)
+
+            created_at = discord.utils.format_dt(user.created_at, style="F")
+            created_relative = discord.utils.format_dt(user.created_at, style="R")
+
+            embed_main.add_field(name="ID", value=f"`{user.id}`", inline=True)
+            embed_main.add_field(
+                name="Is Bot?", value="Yes" if user.bot else "No", inline=True
+            )
+            embed_main.add_field(
+                name="Created Account",
+                value=f"{created_at}\n({created_relative})",
+                inline=False,
+            )
+
+            if user.public_flags:
+                flags = [
+                    name.replace("_", " ").title()
+                    for name, value in user.public_flags
+                    if value
+                ]
+                if flags:
+                    embed_main.add_field(
+                        name="Badges", value=", ".join(flags), inline=False
+                    )
+
+            embeds.append(embed_main)
+
+            if interaction.guild and isinstance(user, discord.Member):
+                embed_guild = discord.Embed(
+                    color=color_value,
+                    title=f"Server Details: {interaction.guild.name}",
+                    timestamp=self.dates.date(),
+                )
+                embed_guild.set_thumbnail(url=user.display_avatar.url)
+
+                if user.joined_at:
+                    joined_at = discord.utils.format_dt(user.joined_at, style="F")
+                    joined_relative = discord.utils.format_dt(user.joined_at, style="R")
+                    embed_guild.add_field(
+                        name="Joined Server",
+                        value=f"{joined_at}\n({joined_relative})",
+                        inline=False,
+                    )
+
+                try:
+                    if user.top_role:
+                        embed_guild.add_field(
+                            name="Top Role", value=user.top_role.mention, inline=True
+                        )
+                except (TypeError, AttributeError):
+                    # Fallback if role hierarchy is broken in cache
+                    pass
+
+                embeds.append(embed_guild)
+
+            embed_visuals = discord.Embed(
+                color=color_value,
+                title=f"{user.name}'s Visuals",
+                description=f"[Avatar Link]({user.display_avatar.url})",
+                timestamp=self.dates.date(),
+            )
+            embed_visuals.set_image(url=user.display_avatar.url)
+
+            try:
+                fetched_user = await self.bot.fetch_user(user.id)
+                if fetched_user.banner:
+                    embed_visuals.add_field(
+                        name="Banner", value=f"[Banner Link]({fetched_user.banner.url})"
+                    )
+            except discord.HTTPException:
+                pass  # Silently fail if fetch fails
+
+            embeds.append(embed_visuals)
+
+            view = ProfileView(interaction, embeds)
+            await interaction.response.send_message(embed=embeds[0], view=view)
+
+            self.log.info(
+                f"{interaction.command.name} ran by {interaction.user} for target {user}."
+            )
+
+        except Exception as e:
+            self.log.error(f"Error in profile command: {e}")
+            await interaction.response.send_message(
+                "An unexpected error occurred while generating the profile.",
+                ephemeral=True,
+            )
+
+
+# Adds the misc cog
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(UserCog(bot))
