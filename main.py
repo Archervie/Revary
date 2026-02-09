@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from gary import GARY
 from gary.gary_self import get_bot as GARY_SELF
 from revu import Revu
-
+ 
 discord.utils.setup_logging(level=logging.INFO, root=True)
 
 
