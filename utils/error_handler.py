@@ -1,5 +1,3 @@
-import logging
-
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -38,6 +36,7 @@ class GlobalErrorHandler(BaseCog):
                 ephemeral=True,
             )
 
+            assert interaction.command
             self.log.warning(
                 f"Unauthorized access attempt by {interaction.user} on {bot_name}: {interaction.command.name}"
             )
@@ -55,7 +54,8 @@ class GlobalErrorHandler(BaseCog):
                 f"There seems to be a cooldown. Try again in {error.retry_after:.1f} seconds.",
                 ephemeral=True,
             )
-
+            
+            assert interaction.command
             self.log.info(
                 f"Cooldown needed for {interaction.command.name}. Try again in {error.retry_after:.1f}"
             )
@@ -72,6 +72,8 @@ class GlobalErrorHandler(BaseCog):
                     "An unknown error seems to have occurred.",
                     ephemeral=True,
                 )
+            
+            assert interaction.command
             self.log.warning(
                 f"An unknown error seems to have occurred for command {interaction.command.name}."
             )

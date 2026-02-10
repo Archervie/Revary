@@ -7,7 +7,7 @@ from discord.ext import commands
 from google import genai
 from google.genai import types
 
-from utils import BaseGroupCog, is_authorized
+from utils import BaseGroupCog, is_authorized, log_command
 
 
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -22,6 +22,7 @@ class AICog(BaseGroupCog, name="ai"):
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(description="yo dad talk to me", name="ask")
     @is_authorized()
+    @log_command()
     async def ask(self, interaction: discord.Interaction, prompt: str) -> int:
         await interaction.response.defer()
         client = genai.Client(api_key=os.environ["GEMINI_KEY"])
@@ -40,8 +41,8 @@ class AICog(BaseGroupCog, name="ai"):
 
         answer = response.text
         answers = [
-            answer[i : i + 2000] for i in range(0, len(answer), 2000)
-        ]  # type:ignore
+            answer[i : i + 2000] for i in range(0, len(answer), 2000)  # type:ignore
+        ]
         for msg in answers:
             await interaction.followup.send(msg)  # type: ignore
             await asyncio.sleep(0.5)

@@ -1,5 +1,5 @@
 import discord
-from typing import Optional, List
+from typing import List
 
 
 class ProfileView(discord.ui.View):

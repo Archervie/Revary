@@ -3,9 +3,10 @@ from typing import List
 import discord
 from discord import app_commands
 from discord.ext import commands
+import selfcord
 
 from gary.gary_self import get_gary
-from utils import BaseGroupCog, is_authorized
+from utils import BaseGroupCog, is_authorized, log_command
 from revu.utils.user_util import ProfileView
 
 
@@ -24,6 +25,7 @@ class UserCog(BaseGroupCog, name="user"):
         description="Get the avatar of a user in a specific size.", name="avatar"
     )
     @is_authorized()
+    @log_command()
     async def avatar(
         self,
         interaction: discord.Interaction,
@@ -32,20 +34,21 @@ class UserCog(BaseGroupCog, name="user"):
     ) -> None:
         """ """
 
-        # Grabs the self-user; done for ease
-        if not user:
-            gary = await get_gary()
-            user = gary.user
+        target_user = user or interaction.user
 
+        assert user
         avatar = user.avatar or user.default_avatar
 
         try:
-            size = int(size)
-            avatar_url = avatar.replace(format="png", size=size).url
+            size_int = int(size)
+            avatar_url = avatar.replace(format="png", size=size_int).url
 
+            assert self.bot.user
             embed = discord.Embed(
-                color=(user.color.value if user.color else self.bot.user.color.value),
-                title=f"{user}'s avatar: {size}x{size}",
+                color=(
+                    target_user.color.value if user.color else self.bot.user.color.value
+                ),
+                title=f"{target_user}'s avatar: {size}x{size}",
                 url=avatar_url,
                 timestamp=self.dates.date(),
             )
@@ -65,6 +68,7 @@ class UserCog(BaseGroupCog, name="user"):
         description="View account facts and information for a user.", name="profile"
     )
     @is_authorized()
+    @log_command()
     async def profile(
         self,
         interaction: discord.Interaction,
@@ -72,30 +76,31 @@ class UserCog(BaseGroupCog, name="user"):
     ) -> None:
         """ """
 
-        if not user:
-            gary = await get_gary()
-            user = gary.user
+        target_user = user or interaction.user
 
         try:
             embeds: List[discord.Embed] = []
 
+            assert self.bot.user
             color_value = self.bot.user.color.value
-            if hasattr(user, "color") and user.color.value != 0:
-                color_value = user.color.value
+            if hasattr(user, "color") and target_user.color.value != 0:
+                color_value = target_user.color.value
 
             embed_main = discord.Embed(
                 color=color_value,
-                title=f"Profile: {user.name}",
+                title=f"Profile: {target_user.name}",
                 timestamp=self.dates.date(),
             )
-            embed_main.set_thumbnail(url=user.display_avatar.url)
+            embed_main.set_thumbnail(url=target_user.display_avatar.url)
 
-            created_at = discord.utils.format_dt(user.created_at, style="F")
-            created_relative = discord.utils.format_dt(user.created_at, style="R")
+            created_at = discord.utils.format_dt(target_user.created_at, style="F")
+            created_relative = discord.utils.format_dt(
+                target_user.created_at, style="R"
+            )
 
-            embed_main.add_field(name="ID", value=f"`{user.id}`", inline=True)
+            embed_main.add_field(name="ID", value=f"`{target_user.id}`", inline=True)
             embed_main.add_field(
-                name="Is Bot?", value="Yes" if user.bot else "No", inline=True
+                name="Is Bot?", value="Yes" if target_user.bot else "No", inline=True
             )
             embed_main.add_field(
                 name="Created Account",
@@ -103,10 +108,10 @@ class UserCog(BaseGroupCog, name="user"):
                 inline=False,
             )
 
-            if user.public_flags:
+            if target_user.public_flags:
                 flags = [
                     name.replace("_", " ").title()
-                    for name, value in user.public_flags
+                    for name, value in target_user.public_flags
                     if value
                 ]
                 if flags:
@@ -139,36 +144,31 @@ class UserCog(BaseGroupCog, name="user"):
                             name="Top Role", value=user.top_role.mention, inline=True
                         )
                 except (TypeError, AttributeError):
-                    # Fallback if role hierarchy is broken in cache
                     pass
 
                 embeds.append(embed_guild)
 
             embed_visuals = discord.Embed(
                 color=color_value,
-                title=f"{user.name}'s Visuals",
-                description=f"[Avatar Link]({user.display_avatar.url})",
+                title=f"{target_user.name}'s Visuals",
+                description=f"[Avatar Link]({target_user.display_avatar.url})",
                 timestamp=self.dates.date(),
             )
-            embed_visuals.set_image(url=user.display_avatar.url)
+            embed_visuals.set_image(url=target_user.display_avatar.url)
 
             try:
-                fetched_user = await self.bot.fetch_user(user.id)
+                fetched_user = await self.bot.fetch_user(target_user.id)
                 if fetched_user.banner:
                     embed_visuals.add_field(
                         name="Banner", value=f"[Banner Link]({fetched_user.banner.url})"
                     )
             except discord.HTTPException:
-                pass  # Silently fail if fetch fails
+                pass
 
             embeds.append(embed_visuals)
 
             view = ProfileView(interaction, embeds)
             await interaction.response.send_message(embed=embeds[0], view=view)
-
-            self.log.info(
-                f"{interaction.command.name} ran by {interaction.user} for target {user}."
-            )
 
         except Exception as e:
             self.log.error(f"Error in profile command: {e}")

@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from utils import Standard
 
-initial_cogs = ["auth", "misc", "user"]
+initial_cogs = ["auth", "misc", "user", "td_list"]
 
 
 class Revu(commands.Bot):

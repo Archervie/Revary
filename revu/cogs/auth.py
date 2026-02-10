@@ -4,7 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from utils import BaseGroupCog, is_authorized
+from utils import BaseGroupCog, is_authorized, log_command
 
 
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -21,6 +21,7 @@ class AuthCog(BaseGroupCog, name="auth"):
         description="Authorize a user to use the bot.", name="authorize"
     )
     @is_authorized()
+    @log_command()
     async def authorize(
         self, interaction: discord.Interaction, user: discord.User | None = None
     ) -> None:
@@ -31,22 +32,22 @@ class AuthCog(BaseGroupCog, name="auth"):
             user (discord.User): The Discord user of the person to authorize.
         """
         if not user:
-            user = interaction.user.name
+            user_name = interaction.user.name
             user_id = interaction.user.id
         else:
+            user_name = user.name
             user_id = user.id
 
         if self.std.auth.verify(user_id):
             await interaction.response.send_message(
-                f"User {user} is already authorized.", ephemeral=True
+                f"User {user_name} is already authorized.", ephemeral=True
             )
         else:
             self.std.auth.authorize(user_id)
             await interaction.response.send_message(
-                f"Successfully authorized user {user}", ephemeral=True
+                f"Successfully authorized user {user_name}", ephemeral=True
             )
             self.log.info(f"Successfully authorized user {user}")
-        self.log.info(f"{interaction.command.name} ran by {interaction.user}.")
 
 
 # Adds the auth cog

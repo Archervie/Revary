@@ -37,5 +37,5 @@ class Dates:
             datetime: The converted datetime object.
         """
         tz = timezone(self.timezone)
-        given_time = utc_time.astimezone(tzinfo=utc).astimezone(tz)
+        given_time: datetime = utc_time.astimezone(tz=utc).astimezone(tz)
         return tz.normalize(given_time)

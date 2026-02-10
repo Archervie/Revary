@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from utils import BaseGroupCog, is_authorized
+from utils import BaseGroupCog, is_authorized, log_command
 
 
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -18,9 +18,11 @@ class ExampleCog(BaseGroupCog, name=""):
     @app_commands.allowed_contexts(dms=True, guilds=True, private_channels=True)
     @app_commands.command(description="", name="")
     @is_authorized()
+    @log_command()
     async def example(self, interaction: discord.Interaction) -> None:
         """ """
         await interaction.response.send_message("", ephemeral=True)
+        assert interaction.command
         self.log.info(f"{interaction.command.name} ran by {interaction.user}.")
 
 
